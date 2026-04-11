@@ -4,6 +4,7 @@ def get_exam_by_name(db, exam_name: str):
     query = text("""
         SELECT * FROM exams
         WHERE LOWER(exam_name) LIKE :name
+        OR LOWER(exam_code) LIKE :name
     """)
     return db.execute(query, {"name": f"%{exam_name.lower()}%"}).fetchone()
 

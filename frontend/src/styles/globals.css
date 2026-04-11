@@ -1,0 +1,107 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-page:        #EEF2F8;
+  --blue-dark:      #1B4F8A;
+  --blue-mid:       #2563C8;
+  --blue-accent:    #3B7DD8;
+  --blue-light:     #D6E5FA;
+
+  --text-primary:   #1A2B45;
+  --text-secondary: #6B7A8D;
+  --text-muted:     #9CA8B8;
+
+  --border-default: #E2E8F2;
+  --border-card:    #D8E2EF;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Fluid page padding: 16px on mobile → 40px on wide */
+  --page-px: clamp(1rem, 4vw, 2.5rem);
+  /* Max content width — full bleed on mobile, capped on desktop */
+  --content-max: 1200px;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Utility: full-width section with centered inner content ── */
+.page-section {
+  width: 100%;
+  padding-left: var(--page-px);
+  padding-right: var(--page-px);
+}
+
+.page-inner {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+/* ── Exam grid: 2 cols mobile → 3 → 4 → 5 on wide ── */
+.exam-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 480px)  { .exam-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 640px)  { .exam-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 900px)  { .exam-grid { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 1100px) { .exam-grid { grid-template-columns: repeat(6, 1fr); } }
+
+/* ── Step2 + Step3: single col mobile, sidebar layout on wide ── */
+.step-layout {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px) {
+  .step-layout {
+    grid-template-columns: 1fr 340px;
+    align-items: start;
+  }
+}
+
+/* ── Hero pill row wraps nicely ── */
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* ── Step indicator: compact on mobile ── */
+.step-label {
+  display: none;
+}
+@media (min-width: 480px) {
+  .step-label { display: inline; }
+}
+
+/* ── Navbar: collapse links on very small screens ── */
+.nav-links-full {
+  display: none;
+}
+@media (min-width: 540px) {
+  .nav-links-full { display: flex; }
+}
+
+button { cursor: pointer; font-family: inherit; }
+input  { font-family: inherit; }

@@ -8,6 +8,7 @@ from app.db import get_db
 from app.services.constraints import get_exam_by_name, get_constraints
 from app.services.image_processor import process_image
 from app.services.pdf_processor import compress_pdf_to_range
+from app.services.file_converter import image_to_pdf
 from app.utils.file_utils import zip_files
 
 router = APIRouter()
@@ -79,6 +80,72 @@ def get_all_exams(db: Session = Depends(get_db)):
     return list(result.values())
 
 
+# @router.post("/process/{exam_name}")
+# async def process_documents(
+#     exam_name: str,
+#     PHOTO: UploadFile = File(None),
+#     SIGNATURE: UploadFile = File(None),
+#     MARKSHEET: UploadFile = File(None),
+#     db: Session = Depends(get_db)
+# ):
+#     exam = get_exam_by_name(db, exam_name)
+#     if not exam:
+#         raise HTTPException(404, "Exam not found")
+
+#     constraints = get_constraints(db, exam.id)
+#     constraint_map = {c.document_type.upper(): c for c in constraints}
+
+#     temp_dir = tempfile.mkdtemp()
+#     output_files = []
+
+#     # Map uploaded files
+#     uploads = {"PHOTO": PHOTO, "SIGNATURE": SIGNATURE, "MARKSHEET": MARKSHEET}
+
+#     for doc_type, upload in uploads.items():
+#         if upload is None:
+#             continue
+
+#         constraint = constraint_map.get(doc_type)
+#         if not constraint:
+#             continue
+
+#         output_path = os.path.join(temp_dir, f"{doc_type}_{upload.filename}")
+
+#         content = await upload.read()
+
+#         if "pdf" in constraint.allowed_formats.lower():
+#             input_pdf = output_path + "_in.pdf"
+#             with open(input_pdf, "wb") as f:
+#                 f.write(content)
+
+#             compress_pdf_to_range(
+#                 input_pdf,
+#                 output_path,
+#                 constraint.min_size_kb,
+#                 constraint.max_size_kb
+#             )
+
+#         else:
+#             process_image(
+#                 content,
+#                 output_path,
+#                 constraint.width_px,
+#                 constraint.height_px,
+#                 constraint.min_size_kb,
+#                 constraint.max_size_kb
+#             )
+
+#         output_files.append(output_path)
+
+#     if not output_files:
+#         raise HTTPException(400, "No valid files uploaded or constraints missing")
+
+#     zip_path = os.path.join(temp_dir, "processed_docs.zip")
+#     zip_files(output_files, zip_path)
+
+#     return FileResponse(zip_path, filename="processed_docs.zip")
+
+
 @router.post("/process/{exam_name}")
 async def process_documents(
     exam_name: str,
@@ -97,8 +164,11 @@ async def process_documents(
     temp_dir = tempfile.mkdtemp()
     output_files = []
 
-    # Map uploaded files
-    uploads = {"PHOTO": PHOTO, "SIGNATURE": SIGNATURE, "MARKSHEET": MARKSHEET}
+    uploads = {
+        "PHOTO": PHOTO,
+        "SIGNATURE": SIGNATURE,
+        "MARKSHEET": MARKSHEET
+    }
 
     for doc_type, upload in uploads.items():
         if upload is None:
@@ -108,22 +178,48 @@ async def process_documents(
         if not constraint:
             continue
 
-        output_path = os.path.join(temp_dir, f"{doc_type}_{upload.filename}")
-
         content = await upload.read()
+        filename = upload.filename.lower()
 
+        # 🔥 Decide output extension properly
         if "pdf" in constraint.allowed_formats.lower():
-            input_pdf = output_path + "_in.pdf"
-            with open(input_pdf, "wb") as f:
-                f.write(content)
+            output_path = os.path.join(temp_dir, f"{doc_type}.pdf")
+        else:
+            output_path = os.path.join(temp_dir, f"{doc_type}.jpg")
 
-            compress_pdf_to_range(
-                input_pdf,
-                output_path,
-                constraint.min_size_kb,
-                constraint.max_size_kb
-            )
+        allowed = constraint.allowed_formats.lower()
 
+        #  CASE 1: PDF required
+        if "pdf" in allowed:
+
+            # If already PDF
+            if filename.endswith(".pdf"):
+                input_pdf = os.path.join(temp_dir, f"{doc_type}_input.pdf")
+
+                with open(input_pdf, "wb") as f:
+                    f.write(content)
+
+                compress_pdf_to_range(
+                    input_pdf,
+                    output_path,
+                    constraint.min_size_kb,
+                    constraint.max_size_kb
+                )
+
+            else:
+                # 🔥 Image → PDF conversion
+                temp_pdf = os.path.join(temp_dir, f"{doc_type}_temp.pdf")
+
+                image_to_pdf(content, temp_pdf)
+
+                compress_pdf_to_range(
+                    temp_pdf,
+                    output_path,
+                    constraint.min_size_kb,
+                    constraint.max_size_kb
+                )
+
+        #  CASE 2: Image required
         else:
             process_image(
                 content,
