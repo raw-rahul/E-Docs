@@ -1,5 +1,6 @@
 package com.edocs.backend_springboot.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FastApiService {
 
-    private final String FASTAPI_URL = "http://127.0.0.1:8000";
+//    private final String FASTAPI_URL = "http://127.0.0.1:8000";
+    @Value("${fastapi.url}")
+    private String FASTAPI_URL;
 
     public ResponseEntity<byte[]> processFiles(
             String examName,

@@ -1,5 +1,6 @@
 package com.edocs.backend_springboot.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -11,6 +12,9 @@ public class ProcessService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${fastapi.url}")
+    private String FASTAPI_URL;
+
     public ResponseEntity<byte[]> processFiles(
             String examName,
             MultipartFile photo,
@@ -18,7 +22,8 @@ public class ProcessService {
             MultipartFile marksheet
     ) {
 
-        String url = "http://localhost:8000/process/" + examName;
+//        String url = "http://localhost:8000/process/" + examName;
+        String url = FASTAPI_URL + "/process/" + examName;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);

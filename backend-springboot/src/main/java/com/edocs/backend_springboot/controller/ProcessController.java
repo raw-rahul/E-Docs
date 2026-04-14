@@ -1,6 +1,7 @@
 package com.edocs.backend_springboot.controller;
 
 import com.edocs.backend_springboot.util.MultipartInputStreamFileResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +13,11 @@ import java.io.*;
 @RestController
 @RequestMapping("/api/process")
 public class ProcessController {
+    @Value("${fastapi.url}")
+    private String FASTAPI_URL;
 
-    private final String PYTHON_API = "http://127.0.0.1:8000/process/";
+//    private final String PYTHON_API = "http://127.0.0.1:8000/process/";
+    String PYTHON_API = FASTAPI_URL + "/process/";
 
     @PostMapping("/{examName}")
     public ResponseEntity<InputStreamResource> processDocs(

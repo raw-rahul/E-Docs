@@ -1,3 +1,48 @@
+#spring:
+#  application:
+#    name: backend-springboot
+#
+#  servlet:
+#    multipart:
+#      max-file-size: 50MB
+#      max-request-size: 50MB
+
+  #  autoconfigure:
+  #    exclude:
+  #      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+#  datasource:
+#    url: jdbc:postgresql://localhost:5433/exams_constraints
+#    username: postgres
+#    password: 2000
+#    driver-class-name: org.postgresql.Driver
+
+#  spring:
+#    datasource:
+#      url: jdbc:postgresql://dpg-d7db9hvavr4c73dvrq50-a.oregon-postgres.render.com:5432/exams_constraints
+#      username: exams_constraints_user
+#      password: AghWAsaihPkBHTb4M9jX2aqyFsoYphcJ
+#      driver-class-name: org.postgresql.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: none
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#
+#server:
+#  port: 8080
+#  tomcat:
+#    max-swallow-size: -1
+#
+#
+#fastapi:
+#  url: https://python-service-hc0d.onrender.com
+
+
 spring:
   application:
     name: backend-springboot
@@ -7,14 +52,10 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-  #  autoconfigure:
-  #    exclude:
-  #      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
   datasource:
-    url: jdbc:postgresql://localhost:5433/exams_constraints
-    username: postgres
-    password: 2000
+    url: jdbc:postgresql://dpg-d7db9hvavr4c73dvrq50-a.oregon-postgres.render.com:5432/exams_constraints
+    username: exams_constraints_user
+    password: AghWAsaihPkBHTb4M9jX2aqyFsoYphcJ
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -27,6 +68,9 @@ spring:
         format_sql: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   tomcat:
     max-swallow-size: -1
+
+fastapi:
+  url: https://python-service-hc0d.onrender.com
