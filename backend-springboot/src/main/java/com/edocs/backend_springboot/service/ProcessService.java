@@ -23,7 +23,7 @@ public class ProcessService {
     ) {
 
 //        String url = "http://localhost:8000/process/" + examName;
-        String url = FASTAPI_URL + "/process/" + examName;
+        String url = FASTAPI_URL + "/process/" + examName.toLowerCase();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);

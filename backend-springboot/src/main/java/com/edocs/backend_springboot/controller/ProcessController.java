@@ -27,7 +27,7 @@ public class ProcessController {
             @RequestParam(required = false) MultipartFile MARKSHEET
     ) throws IOException {
 
-        String url = PYTHON_API + examName;
+        String url = PYTHON_API + examName.toLowerCase();
 
         RestTemplate restTemplate = new RestTemplate();
 
