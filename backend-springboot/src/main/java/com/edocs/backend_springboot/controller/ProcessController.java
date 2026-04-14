@@ -89,6 +89,9 @@ public class ProcessController {
 
         String url = FASTAPI_URL + "/process/" + examName.toLowerCase();
 
+        System.out.println("Calling FastAPI URL: " + url);
+        System.out.println("Files sent: " + files.keySet());
+
         RestTemplate restTemplate = new RestTemplate();
 
         var body = new org.springframework.util.LinkedMultiValueMap<String, Object>();
@@ -112,12 +115,19 @@ public class ProcessController {
 
         HttpEntity<?> requestEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<byte[]> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                requestEntity,
-                byte[].class
-        );
+        ResponseEntity<byte[]> response;
+
+        try {
+            response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    byte[].class
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("FastAPI call failed: " + e.getMessage());
+        }
 
         ByteArrayInputStream bis = new ByteArrayInputStream(response.getBody());
 
