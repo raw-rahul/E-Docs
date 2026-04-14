@@ -6,3 +6,5 @@ opencv-python-headless==4.9.0.80
 rembg==2.0.56
 pymupdf==1.24.1
 python-multipart==0.0.9
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.9
